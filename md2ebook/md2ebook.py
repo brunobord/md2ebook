@@ -16,7 +16,7 @@ Options:
 import os
 import json
 from os.path import abspath, exists, join
-from codecs import open
+import codecs
 import sys
 import shutil
 from functools import wraps
@@ -53,7 +53,7 @@ def ask(question, escape=True):
     answer = raw_input(question)
     if escape:
         answer.replace('"', '\\"')
-    return answer.decode('utf-8')
+    return answer.decode('utf')
 
 
 def check_dependency_epubcheck():
@@ -88,7 +88,8 @@ def check_current_directory(func):
 
 
 def load_config():
-    return json.load(open(join(CWD, 'book.json'), encoding="utf-8"))
+    return json.load(
+        codecs.open(join(CWD, 'book.json'), encoding="utf"))
 
 
 def start(args):
@@ -111,7 +112,8 @@ def start(args):
                 sys.exit(error('Operation aborted'))
         os.makedirs(project_dir)
         os.makedirs(join(project_dir, 'build'))
-        with open(join(project_dir, bookname), 'w', encoding="utf-8") as fd:
+        with codecs.open(
+                join(project_dir, bookname), 'w', encoding="utf") as fd:
             fd.write('''# This is your book
 You can start it right now and publish it away!
 ''')
@@ -123,14 +125,14 @@ You can start it right now and publish it away!
         rewrite_config_file = False
 
     if rewrite_config_file:
-        with open(config_file, 'w', encoding="utf-8") as fd:
+        with codecs.open(config_file, 'w', encoding="utf") as fd:
             data = {
-                'files': [u'%s' % bookname],
-                'author': u"%s" % ask("What is your name? "),
-                'title': u'%s' % ask("E-book title, please? "),
+                'files': ['%s' % bookname],
+                'author': "%s" % ask("What is your name? "),
+                'title': '%s' % ask("E-book title, please? "),
             }
             data['fileroot'] = unidecode(data['title']).lower()
-            json.dump(data, fd, indent=4)
+            json.dump(data, fd, indent=4, encoding="utf")
 
     # Game over
     print
@@ -145,24 +147,30 @@ def build(args):
     content = []
     for filename in config['files']:
         print success('Reading & converting %s...' % filename)
-        with open(filename, encoding="utf-8") as fd:
+        with codecs.open(filename, encoding="utf") as fd:
             content.append(fd.read())
     content = '\n\n-----\n\n'.join(content)
     # Ready to convert to HTML
     body = markdown(content, output_format='html5')
     html = HTML_TEMPLATE % {'title': config['title'], 'body': body}
     html_file = u"%s.html" % config['fileroot']
-    with open(html_file, "w",
-              encoding="utf-8", errors="xmlcharrefreplace") as fd:
+    with codecs.open(html_file, "w",
+                     encoding="utf", errors="xmlcharrefreplace") as fd:
         fd.write(html)
     print success("Sucessfully published %s" % html_file)
     # EPUB
     epub_file = u"%s.epub" % config['fileroot']
-    ebook_convert = u'ebook-convert %(html_file)s %(epub_file)s' % {
+    epub_data = {
         'html_file': html_file,
         'epub_file': epub_file,
+        'authors': u"%s" % config['author'],
+        'title': u"%s" % config['title']
     }
-    shell(ebook_convert.encode())
+    ebook_convert = u'ebook-convert %(html_file)s %(epub_file)s' \
+                    u' --authors="%(authors)s"' \
+                    u' --title="%(title)s"' % epub_data
+    print ebook_convert
+    shell(ebook_convert.encode('utf'))
     print success("Sucessfully published %s" % epub_file)
 
 
@@ -173,6 +181,7 @@ def check(args):
         sys.exit(error('Unavailable command.'))
     config = load_config()
     epub_file = u"%s.epub" % config['fileroot']
+    print success("Starting to check %s..." % epub_file)
     epubcheck = u'epubcheck %s' % epub_file
     epubcheck = shell(epubcheck.encode())
     for line in epubcheck.output():
