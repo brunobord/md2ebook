@@ -167,9 +167,9 @@ def build(args):
         'title': u"%s" % config['title']
     }
     ebook_convert = u'ebook-convert %(html_file)s %(epub_file)s' \
+                    u' --remove-first-image' \
                     u' --authors="%(authors)s"' \
                     u' --title="%(title)s"' % epub_data
-    print ebook_convert
     shell(ebook_convert.encode('utf'))
     print success("Sucessfully published %s" % epub_file)
 
