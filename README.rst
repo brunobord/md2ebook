@@ -36,6 +36,14 @@ When you're done, you can move to this directory and use the ``build`` command::
 This will build a HTML and a EPUB version of your book, as defined in the
 ``book.json`` file.
 
+Extra commands
+--------------
+
+You can check your EPUB integrity using the following::
+
+    md2ebook check
+
+
 Configuration file
 ==================
 
