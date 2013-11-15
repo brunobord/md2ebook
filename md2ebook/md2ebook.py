@@ -5,6 +5,7 @@
 Usage:
   md2ebook start [<name>] [--overwrite] [--bookname=<bookname>]
   md2ebook build
+  md2ebook check
   md2ebook --version
 
 Options:
@@ -55,12 +56,7 @@ def ask(question, escape=True):
     return answer.decode('utf-8')
 
 
-def check_dependencies():
-    "Check external dependecies"
-    try:
-        shell('ebook-convert')
-    except OSError:
-        sys.exit(error('ebook-convert missing, you cannot use md2ebook.'))
+def check_dependency_epubcheck():
     try:
         shell('epubcheck')
     except OSError:
@@ -68,6 +64,17 @@ def check_dependencies():
                       " md2ebook but you won't be able to check your EPUB "
                       " integrity.")
         print
+        return False
+    return True
+
+
+def check_dependencies():
+    "Check external dependecies"
+    try:
+        shell('ebook-convert')
+    except OSError:
+        sys.exit(error('ebook-convert missing, you cannot use md2ebook.'))
+    check_dependency_epubcheck()
 
 
 def check_current_directory(func):
@@ -159,6 +166,19 @@ def build(args):
     print success("Sucessfully published %s" % epub_file)
 
 
+@check_current_directory
+def check(args):
+    "Checks EPUB integrity"
+    if not check_dependency_epubcheck():
+        sys.exit(error('Unavailable command.'))
+    config = load_config()
+    epub_file = u"%s.epub" % config['fileroot']
+    epubcheck = u'epubcheck %s' % epub_file
+    epubcheck = shell(epubcheck.encode())
+    for line in epubcheck.output():
+        print line
+
+
 def main():
     "Main program"
     check_dependencies()
@@ -168,6 +188,8 @@ def main():
         start(args)
     elif args['build']:
         build(args)
+    elif args['check']:
+        check(args)
     else:
         sys.exit(error('Error: the <%s> command is not a md2ebook command. '
                  'Please use the `md2ebook --help` option to see available '
