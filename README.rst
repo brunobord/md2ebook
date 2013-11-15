@@ -34,12 +34,12 @@ When you're done, you can move to this directory and use the ``build`` command::
     md2ebook build
 
 This will build a HTML and a EPUB version of your book, as defined in the
-:file:`book.json` file.
+``book.json`` file.
 
 Configuration file
 ==================
 
-At the root of your book directory, you have a :file:`book.json` file which
+At the root of your book directory, you have a ``book.json`` file which
 contains your book configuration. This file is mandatory.
 
 Here are its **mandatory** options, as a complete example:
@@ -58,6 +58,5 @@ Here are its **mandatory** options, as a complete example:
 * ``author`` is the name of the author of the book.
 * ``title`` is the title of the book, in its full glory.
 * ``fileroot`` this string will serve as a *root* for the different outputs.
-  Following the example, you'll produce :file:`what-a-beautiful-title.html` and
-  :file:`what-a-beautiful-title.epub` in your book root directory.
-
+  Following the example, you'll produce ``what-a-beautiful-title.html`` and
+  ``what-a-beautiful-title.epub`` in your book root directory.
