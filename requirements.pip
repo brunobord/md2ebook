@@ -1,0 +1,5 @@
+docopt==0.6.1
+markdown==2.3.1
+shell==1.0.1
+ansicolors==1.0.2
+Unidecode==0.04.14
