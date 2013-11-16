@@ -31,12 +31,14 @@ import sys
 import shutil
 from functools import wraps
 
-
 from colors import red as error, yellow as warning, green as success
 from docopt import docopt
 from shell import shell
 from markdown import markdown
 from unidecode import unidecode
+
+from .ui import yesno, ask
+
 
 CWD = os.getcwd()
 HTML_TEMPLATE = """<!doctype html>
@@ -50,20 +52,6 @@ HTML_TEMPLATE = """<!doctype html>
 </body>
 </html>
 """
-
-
-def yesno(question):
-    "Return true if the answer is 'yes'"
-    answer = raw_input(question).lower()
-    return answer in ('y', 'yes')
-
-
-def ask(question, escape=True):
-    "Return the answer"
-    answer = raw_input(question)
-    if escape:
-        answer.replace('"', '\\"')
-    return answer.decode('utf')
 
 
 def check_dependency_epubcheck():
@@ -169,7 +157,8 @@ You can start it right now and publish it away!
                 'author': "%s" % ask("What is your name? "),
                 'title': '%s' % ask("E-book title, please? "),
             }
-            data['fileroot'] = unidecode(data['title']).lower()
+            data['fileroot'] = unidecode(data['title']).lower() \
+                .replace(' ', '-')
             json.dump(data, fd, indent=4, encoding="utf")
 
     # Game over
