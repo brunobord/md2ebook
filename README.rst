@@ -48,7 +48,7 @@ Options
 
 For more help on the md2ebook command, simply type::
 
-    md2ebook
+    md2ebook --help
 
 and you'll get extensive documentation about commands and their options.
 
@@ -76,3 +76,10 @@ Here are its **mandatory** options, as a complete example:
 * ``fileroot`` this string will serve as a *root* for the different outputs.
   Following the example, you'll produce ``what-a-beautiful-title.html`` and
   ``what-a-beautiful-title.epub`` in your book root directory.
+
+Extra configuration
+-------------------
+
+* ``pdf`` : triggers the PDF generation when using build. Set it to ``true`` or
+  ``false``. If not set, the PDF won't be generated. Use the ``--with-pdf``
+  option to override this settings.

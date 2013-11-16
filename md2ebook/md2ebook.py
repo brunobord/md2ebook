@@ -4,13 +4,21 @@
 
 Usage:
   md2ebook start [<name>] [--overwrite] [--bookname=<bookname>]
-  md2ebook build
+  md2ebook build [--with-pdf]
   md2ebook check
   md2ebook --version
 
+Commands:
+  start     Start a blank project, using the default template
+  build     Generates HTML and EPUB. Optionally PDF
+  check     Checks for the EPUB integrity. Needs epubcheck.
+
 Options:
-  -h --help     Show this screen.
-  --version     Show version.
+  -h --help                Show this screen.
+  --version                Show version.
+  --overwrite              Will overwrite the project directory. Handle with care
+  --bookname=<bookname>    Will set the name of the initial Markdown file
+  --with-pdf               Will generate the PDF along with the HTML and EPUB
 
 """
 import os
@@ -145,6 +153,8 @@ def build(args):
     "Build your book"
     config = load_config()
     content = []
+    build_dir = join(CWD, 'build')
+    # Reading markdown files
     for filename in config['files']:
         print success('Reading & converting %s...' % filename)
         with codecs.open(filename, encoding="utf") as fd:
@@ -154,21 +164,21 @@ def build(args):
     body = markdown(content, output_format='html5')
     html = HTML_TEMPLATE % {'title': config['title'], 'body': body}
     html_file = u"%s.html" % config['fileroot']
-    html_path = join(CWD, 'build', html_file)
+    html_path = join(build_dir, html_file)
     with codecs.open(html_path, "w",
                      encoding="utf", errors="xmlcharrefreplace") as fd:
         fd.write(html)
     print success("Sucessfully published %s" % html_file)
     # EPUB
     epub_file = u"%s.epub" % config['fileroot']
-    epub_path = join(CWD, 'build', epub_file)
+    epub_path = join(build_dir, epub_file)
     epub_data = {
         'html_file': html_path,
         'epub_file': epub_path,
         'authors': u"%s" % config['author'],
         'title': u"%s" % config['title']
     }
-    ebook_options = [
+    ebook_convert = [
         u'ebook-convert %(html_file)s %(epub_file)s',  # the actual command
         # options
         u'--remove-first-image',
@@ -178,12 +188,38 @@ def build(args):
         u"--level2-toc '//h:h2'",
         u'--title="%(title)s"',
     ]
-    ebook_convert = u' '.join(ebook_options)
+    ebook_convert = u' '.join(ebook_convert)
     ebook_convert = ebook_convert % epub_data
     output = shell(ebook_convert.encode('utf'))
     for line in output.output():
         print warning(line)
     print success("Sucessfully published %s" % epub_file)
+
+    # Shall we proceed to the PDF?
+    if config.get('pdf', False) or args['--with-pdf']:
+        pdf_file = u"%s.pdf" % config['fileroot']
+        pdf_path = join(build_dir, pdf_file)
+        pdf_data = {
+            'html_file': html_path,
+            'pdf_file': pdf_path,
+            'authors': u"%s" % config['author'],
+            'title': u"%s" % config['title']
+        }
+        ebook_convert = [
+            u'ebook-convert %(html_file)s %(pdf_file)s',  # the actual command
+            # options
+            u'--authors="%(authors)s"',
+            u"--chapter '//h:h1'",
+            u"--level1-toc '//h:h1'",
+            u"--level2-toc '//h:h2'",
+            u'--title="%(title)s"',
+        ]
+        ebook_convert = u' '.join(ebook_convert)
+        ebook_convert = ebook_convert % pdf_data
+        output = shell(ebook_convert.encode('utf'))
+        for line in output.output():
+            print warning(line)
+        print success("Successfully published %s" % pdf_file)
 
 
 @check_current_directory
