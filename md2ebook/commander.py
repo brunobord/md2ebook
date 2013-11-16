@@ -97,7 +97,7 @@ class Commander(object):
         html_generator = HTMLGenerator(self.cwd, config)
         html_generator.build()
 
-        # Cover dance
+        # EPUB Generation
         epub_generator = CalibreEPUBGenerator(self.cwd, config, self.args)
         epub_generator.build()
 

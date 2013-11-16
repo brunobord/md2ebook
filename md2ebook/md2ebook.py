@@ -18,9 +18,11 @@ Options:
   --version                Show version.
   --overwrite              Will overwrite the project directory.
                            Handle with care.
-  --bookname=<bookname>    Will set the name of the initial Markdown file
-  --verbose                Will display ebook-convert output
-  --with-pdf               Will generate the PDF along with the HTML and EPUB
+  --bookname=<bookname>    Will set the name of the initial Markdown file.
+  --verbose                Will display ebook-convert output.
+  --with-pdf               Will generate the PDF along with the HTML and EPUB.
+  --cover=<cover>          File path or URL for a cover that would override the
+                           configuration (or default standard).
 
 """
 

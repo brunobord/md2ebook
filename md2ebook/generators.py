@@ -64,7 +64,7 @@ class Generator(object):
             'title': u"%s" % self.config['title']
         }
         if self.cover:
-            data['cover'] = abspath(self.cover)
+            data['cover'] = self.cover
         return data
 
     @property
@@ -97,6 +97,9 @@ class Generator(object):
                     filename = temp_filename
                     break
         if filename:
+            if filename.startswith('http://') or \
+               filename.startswith('https://'):
+                return filename
             if not exists(filename):
                 print error('The designated cover (%s) does not exists.'
                             ' Please check your settings.' % filename)

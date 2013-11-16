@@ -64,6 +64,9 @@ You can designate a cover for your ebook using one of the three options:
 
 If none of them leads to an existing file, the ugly default cover will be used.
 
+Please note that the configuration option or the optional argument may be a
+URL (yes, something like ``http://example.com/beautiful-cover.jpg``).
+
 Configuration file
 ==================
 
