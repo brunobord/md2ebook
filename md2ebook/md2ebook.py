@@ -3,7 +3,7 @@
 """Markdown to Book.
 
 Usage:
-  md2ebook start <name> [--overwrite] [--bookname=<bookname>]
+  md2ebook start [<name>] [--overwrite] [--bookname=<bookname>]
   md2ebook build [--with-pdf] [--verbose] [--cover=<cover>]
   md2ebook check
   md2ebook --version
