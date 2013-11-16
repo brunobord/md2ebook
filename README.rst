@@ -59,7 +59,7 @@ You can designate a cover for your ebook using one of the three options:
 
 * Adding a ``--cover`` argument to the command line,
 * Adding a ``cover`` key to your configuration file,
-* Leaving a ``cover.(png|jpg|jpeg|svg)` file at the root of your project, this
+* Leaving a ``cover.(png|jpg|jpeg|svg)`` file at the root of your project, this
   one will be used as a cover.
 
 If none of them leads to an existing file, the ugly default cover will be used.
@@ -101,3 +101,10 @@ Extra configuration
 * ``cover``: will set the path of your cover. this must lead to an existing file
   and if possible, an image (png, jpg, jpeg, or even SVG).
 
+Credits
+=======
+
+This piece of software is Copyleft 2013 - Bruno Bord.
+
+It is released under the terms of the MIT License, see LICENSE file for more
+details.
