@@ -149,20 +149,22 @@ def build(args):
         print success('Reading & converting %s...' % filename)
         with codecs.open(filename, encoding="utf") as fd:
             content.append(fd.read())
-    content = '\n\n-----\n\n'.join(content)
+    content = '\n\n'.join(content)
     # Ready to convert to HTML
     body = markdown(content, output_format='html5')
     html = HTML_TEMPLATE % {'title': config['title'], 'body': body}
     html_file = u"%s.html" % config['fileroot']
-    with codecs.open(html_file, "w",
+    html_path = join(CWD, 'build', html_file)
+    with codecs.open(html_path, "w",
                      encoding="utf", errors="xmlcharrefreplace") as fd:
         fd.write(html)
     print success("Sucessfully published %s" % html_file)
     # EPUB
     epub_file = u"%s.epub" % config['fileroot']
+    epub_path = join(CWD, 'build', epub_file)
     epub_data = {
-        'html_file': html_file,
-        'epub_file': epub_file,
+        'html_file': html_path,
+        'epub_file': epub_path,
         'authors': u"%s" % config['author'],
         'title': u"%s" % config['title']
     }
