@@ -107,8 +107,7 @@ def load_cover(args, config):
 
     1. if a --cover option is set, use it.
     2. if there's a "cover" key in the config file, use it.
-    3. if a cover.png or cover.jpg or cover.jpeg exists in the directory,
-       use it.
+    3. if a cover.(png|jpg|jpeg|svg) exists in the directory, use it.
 
     Once the choice is set, the program will check if the file exists before
     using it. If it doesn't exist, you'll be warned and the default (ugly)
@@ -116,7 +115,7 @@ def load_cover(args, config):
     """
     filename = args.get('--cover', None) or config.get('cover', None) or None
     if not filename:
-        for extension in ('png', 'jpg', 'jpeg'):
+        for extension in ('png', 'jpg', 'jpeg', 'svg'):
             filename = 'cover.%s' % extension
             if exists(filename):
                 break
