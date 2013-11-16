@@ -60,6 +60,7 @@ class Generator(object):
         data = {
             'html_file': self.html_path,
             'epub_file': self.epub_path,
+            'pdf_file': self.pdf_path,
             'authors': u"%s" % self.config['author'],
             'title': u"%s" % self.config['title']
         }
@@ -164,7 +165,7 @@ class CalibreEPUBGenerator(CalibreGenerator):
         return options
 
 
-class CalibrePDFGenerator(Generator):
+class CalibrePDFGenerator(CalibreGenerator):
     "Calibre PDF Generator"
     command = u'ebook-convert %(html_file)s %(pdf_file)s'
 
