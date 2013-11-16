@@ -168,11 +168,21 @@ def build(args):
         'authors': u"%s" % config['author'],
         'title': u"%s" % config['title']
     }
-    ebook_convert = u'ebook-convert %(html_file)s %(epub_file)s' \
-                    u' --remove-first-image' \
-                    u' --authors="%(authors)s"' \
-                    u' --title="%(title)s"' % epub_data
-    shell(ebook_convert.encode('utf'))
+    ebook_options = [
+        u'ebook-convert %(html_file)s %(epub_file)s',  # the actual command
+        # options
+        u'--remove-first-image',
+        u'--authors="%(authors)s"',
+        u"--chapter '//h:h1'",
+        u"--level1-toc '//h:h1'",
+        u"--level2-toc '//h:h2'",
+        u'--title="%(title)s"',
+    ]
+    ebook_convert = u' '.join(ebook_options)
+    ebook_convert = ebook_convert % epub_data
+    output = shell(ebook_convert.encode('utf'))
+    for line in output.output():
+        print warning(line)
     print success("Sucessfully published %s" % epub_file)
 
 
