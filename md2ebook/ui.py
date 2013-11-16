@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 """User interface toolkit
 """
+from colors import red, yellow, green
 
 
 def yesno(question):
@@ -16,3 +17,7 @@ def ask(question, escape=True):
     if escape:
         answer.replace('"', '\\"')
     return answer.decode('utf')
+
+error = red
+warning = yellow
+success = green

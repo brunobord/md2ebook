@@ -34,24 +34,13 @@ from functools import wraps
 from colors import red as error, yellow as warning, green as success
 from docopt import docopt
 from shell import shell
-from markdown import markdown
 from unidecode import unidecode
 
 from .ui import yesno, ask
+from .generators import HTMLGenerator, CalibreEPUBGenerator, CalibrePDFGenerator
 
 
 CWD = os.getcwd()
-HTML_TEMPLATE = """<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>%(title)s</title>
-</head>
-<body>
-%(body)s
-</body>
-</html>
-"""
 
 
 def check_dependency_epubcheck():
@@ -87,35 +76,6 @@ def check_current_directory(func):
 
 def load_config():
     return json.load(codecs.open(join(CWD, 'book.json'), encoding="utf"))
-
-
-def load_cover(args, config):
-    """Load the cover out of the config, options and conventions.
-    Priority goes this way:
-
-    1. if a --cover option is set, use it.
-    2. if there's a "cover" key in the config file, use it.
-    3. if a cover.(png|jpg|jpeg|svg) exists in the directory, use it.
-
-    Once the choice is set, the program will check if the file exists before
-    using it. If it doesn't exist, you'll be warned and the default (ugly)
-    cover will be used.
-    """
-    filename = args.get('--cover', None) or config.get('cover', None) or None
-    if not filename:
-        for extension in ('png', 'jpg', 'jpeg', 'svg'):
-            filename = 'cover.%s' % extension
-            if exists(filename):
-                break
-    if filename:
-        if not exists(filename):
-            print error('The designated cover (%s) does not exists.'
-                        ' Please check your settings.' % filename)
-            filename = None
-    if not filename:
-        print warning('No cover is set, will use the default (ugly) one.')
-        return False
-    return abspath(filename)
 
 
 def start(args):
@@ -171,87 +131,17 @@ You can start it right now and publish it away!
 def build(args):
     "Build your book"
     config = load_config()
-    content = []
-    build_dir = join(CWD, 'build')
-    # Reading markdown files
-    for filename in config['files']:
-        print success('Reading & converting %s...' % filename)
-        with codecs.open(filename, encoding="utf") as fd:
-            content.append(fd.read())
-    content = '\n\n'.join(content)
-    # Ready to convert to HTML
-    body = markdown(content, output_format='html5')
-    html = HTML_TEMPLATE % {'title': config['title'], 'body': body}
-    html_file = u"%s.html" % config['fileroot']
-    html_path = join(build_dir, html_file)
-    with codecs.open(html_path, "w",
-                     encoding="utf", errors="xmlcharrefreplace") as fd:
-        fd.write(html)
-    print success("Sucessfully published %s" % html_file)
+    html_generator = HTMLGenerator(CWD, config)
+    html_generator.build()
 
     # Cover dance
-    cover = load_cover(args, config)
-
-    # EPUB
-    epub_file = u"%s.epub" % config['fileroot']
-    epub_path = join(build_dir, epub_file)
-    epub_data = {
-        'html_file': html_path,
-        'epub_file': epub_path,
-        'authors': u"%s" % config['author'],
-        'title': u"%s" % config['title']
-    }
-    ebook_convert = [
-        u'ebook-convert %(html_file)s %(epub_file)s',  # the actual command
-        # options
-        u'--remove-first-image',
-        u'--authors="%(authors)s"',
-        u"--chapter '//h:h1'",
-        u"--level1-toc '//h:h1'",
-        u"--level2-toc '//h:h2'",
-        u'--title="%(title)s"',
-    ]
-    if cover:
-        ebook_convert.append('--no-default-epub-cover')
-        ebook_convert.append('--cover="%(cover)s"')
-        epub_data['cover'] = abspath(cover)
-    ebook_convert = u' '.join(ebook_convert)
-    ebook_convert = ebook_convert % epub_data
-    output = shell(ebook_convert.encode('utf'))
-    if args.get('--verbose', False):
-        for line in output.output():
-            print warning(line)
-    print success("Sucessfully published %s" % epub_file)
+    epub_generator = CalibreEPUBGenerator(CWD, config, args)
+    epub_generator.build()
 
     # Shall we proceed to the PDF?
     if config.get('pdf', False) or args['--with-pdf']:
-        pdf_file = u"%s.pdf" % config['fileroot']
-        pdf_path = join(build_dir, pdf_file)
-        pdf_data = {
-            'html_file': html_path,
-            'pdf_file': pdf_path,
-            'authors': u"%s" % config['author'],
-            'title': u"%s" % config['title']
-        }
-        ebook_convert = [
-            u'ebook-convert %(html_file)s %(pdf_file)s',  # the actual command
-            # options
-            u'--authors="%(authors)s"',
-            u"--chapter '//h:h1'",
-            u"--level1-toc '//h:h1'",
-            u"--level2-toc '//h:h2'",
-            u'--title="%(title)s"',
-        ]
-        if cover:
-            ebook_convert.append('--cover="%(cover)s"')
-            pdf_data['cover'] = abspath(cover)
-        ebook_convert = u' '.join(ebook_convert)
-        ebook_convert = ebook_convert % pdf_data
-        output = shell(ebook_convert.encode('utf'))
-        if args.get('--verbose', False):
-            for line in output.output():
-                print warning(line)
-        print success("Successfully published %s" % pdf_file)
+        pdf_generator = CalibrePDFGenerator(CWD, config, args)
+        pdf_generator.build()
 
 
 @check_current_directory
