@@ -4,7 +4,7 @@
 
 Usage:
   md2ebook start [<name>] [--overwrite] [--bookname=<bookname>]
-  md2ebook build [--with-pdf]
+  md2ebook build [--with-pdf] [--verbose] [--cover=<cover>]
   md2ebook check
   md2ebook --version
 
@@ -16,8 +16,10 @@ Commands:
 Options:
   -h --help                Show this screen.
   --version                Show version.
-  --overwrite              Will overwrite the project directory. Handle with care
+  --overwrite              Will overwrite the project directory.
+                           Handle with care.
   --bookname=<bookname>    Will set the name of the initial Markdown file
+  --verbose                Will display ebook-convert output
   --with-pdf               Will generate the PDF along with the HTML and EPUB
 
 """
@@ -96,8 +98,37 @@ def check_current_directory(func):
 
 
 def load_config():
-    return json.load(
-        codecs.open(join(CWD, 'book.json'), encoding="utf"))
+    return json.load(codecs.open(join(CWD, 'book.json'), encoding="utf"))
+
+
+def load_cover(args, config):
+    """Load the cover out of the config, options and conventions.
+    Priority goes this way:
+
+    1. if a --cover option is set, use it.
+    2. if there's a "cover" key in the config file, use it.
+    3. if a cover.png or cover.jpg or cover.jpeg exists in the directory,
+       use it.
+
+    Once the choice is set, the program will check if the file exists before
+    using it. If it doesn't exist, you'll be warned and the default (ugly)
+    cover will be used.
+    """
+    filename = args.get('--cover', None) or config.get('cover', None) or None
+    if not filename:
+        for extension in ('png', 'jpg', 'jpeg'):
+            filename = 'cover.%s' % extension
+            if exists(filename):
+                break
+    if filename:
+        if not exists(filename):
+            print error('The designated cover (%s) does not exists.'
+                        ' Please check your settings.' % filename)
+            filename = None
+    if not filename:
+        print warning('No cover is set, will use the default (ugly) one.')
+        return False
+    return abspath(filename)
 
 
 def start(args):
@@ -169,6 +200,10 @@ def build(args):
                      encoding="utf", errors="xmlcharrefreplace") as fd:
         fd.write(html)
     print success("Sucessfully published %s" % html_file)
+
+    # Cover dance
+    cover = load_cover(args, config)
+
     # EPUB
     epub_file = u"%s.epub" % config['fileroot']
     epub_path = join(build_dir, epub_file)
@@ -188,11 +223,16 @@ def build(args):
         u"--level2-toc '//h:h2'",
         u'--title="%(title)s"',
     ]
+    if cover:
+        ebook_convert.append('--no-default-epub-cover')
+        ebook_convert.append('--cover="%(cover)s"')
+        epub_data['cover'] = abspath(cover)
     ebook_convert = u' '.join(ebook_convert)
     ebook_convert = ebook_convert % epub_data
     output = shell(ebook_convert.encode('utf'))
-    for line in output.output():
-        print warning(line)
+    if args.get('--verbose', False):
+        for line in output.output():
+            print warning(line)
     print success("Sucessfully published %s" % epub_file)
 
     # Shall we proceed to the PDF?
@@ -214,11 +254,15 @@ def build(args):
             u"--level2-toc '//h:h2'",
             u'--title="%(title)s"',
         ]
+        if cover:
+            ebook_convert.append('--cover="%(cover)s"')
+            pdf_data['cover'] = abspath(cover)
         ebook_convert = u' '.join(ebook_convert)
         ebook_convert = ebook_convert % pdf_data
         output = shell(ebook_convert.encode('utf'))
-        for line in output.output():
-            print warning(line)
+        if args.get('--verbose', False):
+            for line in output.output():
+                print warning(line)
         print success("Successfully published %s" % pdf_file)
 
 
