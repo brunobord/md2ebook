@@ -6,8 +6,8 @@ Requirements
 ============
 
 * `Calibre <http://calibre-ebook.com/>`_  (especially its `command-line-interface tools <http://manual.calibre-ebook.com/cli/cli-index.html>`_)
-* `epubcheck <https://github.com/IDPF/epubcheck>`_
 * `Python <http://python.org/>`_
+* `epubcheck <https://github.com/IDPF/epubcheck>`_ (this one's optional)
 
 Installation
 ------------
