@@ -52,6 +52,18 @@ For more help on the md2ebook command, simply type::
 
 and you'll get extensive documentation about commands and their options.
 
+Cover
+-----
+
+You can designate a cover for your ebook using one of the three options:
+
+* Adding a ``--cover`` argument to the command line,
+* Adding a ``cover`` key to your configuration file,
+* Leaving a ``cover.png`` or ``cover.jpg`` or ``cover.jpeg`` file at the root
+  of your project, this one will be used as a cover.
+
+If none of them leads to an existing file, the ugly default cover will be used.
+
 Configuration file
 ==================
 
@@ -80,6 +92,9 @@ Here are its **mandatory** options, as a complete example:
 Extra configuration
 -------------------
 
-* ``pdf`` : triggers the PDF generation when using build. Set it to ``true`` or
+* ``pdf``: triggers the PDF generation when using build. Set it to ``true`` or
   ``false``. If not set, the PDF won't be generated. Use the ``--with-pdf``
   option to override this settings.
+* ``cover``: will set the path of your cover. this must lead to an existing file
+  and if possible, an image (png, jpg, jpeg).
+
