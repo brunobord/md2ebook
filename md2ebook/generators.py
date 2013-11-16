@@ -29,7 +29,6 @@ class Generator(object):
         self.config = config
         self.args = args
         self.build_dir = join(self.cwd, 'build')
-        self.cover = self.load_cover()
 
     @property
     def html_file(self):
@@ -67,6 +66,12 @@ class Generator(object):
         if self.cover:
             data['cover'] = abspath(self.cover)
         return data
+
+    @property
+    def cover(self):
+        if not hasattr(self, '_cover'):
+            self._cover = self.load_cover()
+        return self._cover
 
     def load_cover(self):
         """Load the cover out of the config, options and conventions.
