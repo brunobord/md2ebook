@@ -272,9 +272,12 @@ def check(args):
         sys.exit(error('Unavailable command.'))
     config = load_config()
     epub_file = u"%s.epub" % config['fileroot']
+    epub_path = join(CWD, 'build', epub_file)
     print success("Starting to check %s..." % epub_file)
-    epubcheck = u'epubcheck %s' % epub_file
+    epubcheck = u'epubcheck %s' % epub_path
     epubcheck = shell(epubcheck.encode())
+    for line in epubcheck.errors():
+        print error(line)
     for line in epubcheck.output():
         print line
 
