@@ -43,6 +43,14 @@ You can check your EPUB integrity using the following::
 
     md2ebook check
 
+Options
+-------
+
+For more help on the md2ebook command, simply type::
+
+    md2ebook
+
+and you'll get extensive documentation about commands and their options.
 
 Configuration file
 ==================
