@@ -105,6 +105,45 @@ Extra configuration
   you can add to parse the Markdown files. Please refer to the Markdown
   extension to use the supported extensions.
 
+Note about the Markdown extensions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here's a list about the available extensions:
+
+* Extra ("extra")
+
+  * Abbreviations: ("abbr")
+  * Attribute list: ("attr_list")
+  * Definition Lists:  ("def_list")
+  * Fenced Code Blocks:  ("fenced_code")
+  * Footnotes: ("footnotes")
+  * Tables: ("tables")
+  * Smart Strong: ("smart_strong")
+
+* Admonition: ("admonition")
+* CodeHilite: ("codehilite")
+* HeaderId: ("headerid")
+* Meta-Data: ("meta")
+* New Line to Break: ("nl2br")
+* Sane Lists: ("sane_lists")
+* Table of Contents: ("toc")
+* WikiLinks: ("wikilinks")
+
+Here's an example of config.json using the extensions::
+
+    {
+    "files": [
+        "book.md"
+    ],
+    "title": "Les 3 Mousquetaires",
+    "fileroot": "les-3-mousquetaires",
+    "author": "Alexandre Dumas",
+    "extensions": ["admonitions", "toc", "footnotes"]
+    }
+
+Extension parameters are set `as described in the docs <http://pythonhosted.org/Markdown/extensions/header_id.html>`::
+
+  "extensions": ["headerid(level=3)"]
 
 Credits
 =======
