@@ -101,7 +101,7 @@ Extra configuration
 * ``cover``: will set the path of your cover. this must lead to an existing file
   and if possible, an image (png, jpg, jpeg, or even SVG).
 * ``extensions``: this list of strings defines the
-  `Markdown Extensions <http://pythonhosted.org/Markdown/extensions/index.html>`
+  `Markdown Extensions <http://pythonhosted.org/Markdown/extensions/index.html>`_
   you can add to parse the Markdown files. Please refer to the Markdown
   extension to use the supported extensions.
 
@@ -141,9 +141,11 @@ Here's an example of config.json using the extensions::
     "extensions": ["admonitions", "toc", "footnotes"]
     }
 
-Extension parameters are set `as described in the docs <http://pythonhosted.org/Markdown/extensions/header_id.html>`::
+Extension parameters are set `as described in the docs <http://pythonhosted.org/Markdown/extensions/header_id.html>`_
 
-  "extensions": ["headerid(level=3)"]
+::
+
+    "extensions": ["headerid(level=3)"]
 
 Credits
 =======
