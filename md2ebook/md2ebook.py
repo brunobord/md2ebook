@@ -35,7 +35,7 @@ from .checkers import check_dependencies
 def main():
     "Main program"
     check_dependencies()
-    args = docopt(__doc__, version='mdbeook 0.0.1-dev')
+    args = docopt(__doc__, version='md2ebook 0.0.1-dev')
     commander = Commander(args)
     commander.handle()
 
