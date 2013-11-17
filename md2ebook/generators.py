@@ -113,6 +113,13 @@ class Generator(object):
 class HTMLGenerator(Generator):
     "HTML Generator, out of the Markdown files defined in the config file."
 
+    @property
+    def extensions(self):
+        "Extensions come from the configuration"
+        if 'extensions' not in self.config:
+            return []
+        return self.config['extensions']
+
     def build(self):
         content = []
         for filename in self.config['files']:
@@ -121,7 +128,10 @@ class HTMLGenerator(Generator):
                 content.append(fd.read())
         content = '\n\n'.join(content)
         # Ready to convert to HTML
-        body = markdown(content, output_format='html5')
+        body = markdown(
+            content,
+            extensions=self.extensions,
+            output_format='html5')
         html = HTML_TEMPLATE % {
             'title': self.config['title'],
             'body': body}

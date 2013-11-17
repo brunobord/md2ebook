@@ -100,6 +100,11 @@ Extra configuration
   option to override this settings.
 * ``cover``: will set the path of your cover. this must lead to an existing file
   and if possible, an image (png, jpg, jpeg, or even SVG).
+* ``extensions``: this list of strings defines the
+  `Markdown Extensions <http://pythonhosted.org/Markdown/extensions/index.html>`
+  you can add to parse the Markdown files. Please refer to the Markdown
+  extension to use the supported extensions.
+
 
 Credits
 =======
