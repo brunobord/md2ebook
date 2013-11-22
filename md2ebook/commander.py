@@ -15,7 +15,9 @@ from shell import shell
 from .ui import error, success, warning, yesno, ask
 from .generators import HTMLGenerator
 from .generators import CalibreEPUBGenerator, CalibrePDFGenerator
+from .generators import PandocEPUBGenerator, PandocPDFGenerator
 from .checkers import check_dependency_epubcheck
+from .exceptions import ConfigurationError
 
 CWD = os.getcwd()
 
@@ -114,14 +116,28 @@ class Commander(object):
         html_generator = HTMLGenerator(self.cwd, config)
         html_generator.build()
 
+        if self.args.get('--generator', None):
+            generator = self.args.get('--generator')
+        else:
+            generator = config.get('generator')
+
+        if generator == 'calibre':
+            EPUBClass = CalibreEPUBGenerator
+            PDFClass = CalibrePDFGenerator
+        elif generator == 'pandoc':
+            EPUBClass = PandocEPUBGenerator
+            PDFClass = PandocPDFGenerator
+        else:
+            raise ConfigurationError(
+                "Wrong configuration. Please check your config.json file.")
+
         # EPUB Generation
-        epub_generator = CalibreEPUBGenerator(self.cwd, config, self.args)
+        epub_generator = EPUBClass(self.cwd, config, self.args)
         epub_generator.build()
 
         # Shall we proceed to the PDF?
         if config.get('pdf', False) or self.args['--with-pdf']:
-            pdf_generator = CalibrePDFGenerator(
-                self.cwd, config, self.args)
+            pdf_generator = PDFClass(self.cwd, config, self.args)
             pdf_generator.build()
 
     @check_current_directory

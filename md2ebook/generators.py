@@ -142,8 +142,8 @@ class HTMLGenerator(Generator):
         print success("Sucessfully published %s" % self.html_file)
 
 
-class CalibreGenerator(Generator):
-    "Generic Calibre generator"
+class EbookGenerator(Generator):
+    "Generic Ebook generator"
 
     def build(self):
         options = u' '.join(self.options)
@@ -158,14 +158,24 @@ class CalibreGenerator(Generator):
         print success("Sucessfully published %s" % self.result_file)
 
 
-class CalibreEPUBGenerator(CalibreGenerator):
-    "Calibre EPUB Generator"
-
-    command = u'ebook-convert %(html_file)s %(epub_file)s'
-
+class EPUBGenerator(EbookGenerator):
+    "Generic EPUB Generator"
     @property
     def result_file(self):
         return self.epub_file
+
+
+class PDFGenerator(EbookGenerator):
+    "Generic PDF Generator"
+    @property
+    def result_file(self):
+        return self.pdf_file
+
+
+class CalibreEPUBGenerator(EPUBGenerator):
+    "Calibre EPUB Generator"
+
+    command = u'ebook-convert %(html_file)s %(epub_file)s'
 
     @property
     def options(self):
@@ -183,13 +193,9 @@ class CalibreEPUBGenerator(CalibreGenerator):
         return options
 
 
-class CalibrePDFGenerator(CalibreGenerator):
+class CalibrePDFGenerator(PDFGenerator):
     "Calibre PDF Generator"
     command = u'ebook-convert %(html_file)s %(pdf_file)s'
-
-    @property
-    def result_file(self):
-        return self.pdf_file
 
     @property
     def options(self):
@@ -203,3 +209,39 @@ class CalibrePDFGenerator(CalibreGenerator):
         if self.cover:
             data.append('--cover="%(cover)s"')
         return data
+
+
+class PandocEPUBGenerator(EPUBGenerator):
+    "Pandoc EPUB Generator"
+    command = u'pandoc %(html_file)s -o %(epub_file)s'
+
+    @property
+    def metadata_file(self):
+        return "metadata.xml"
+
+    @property
+    def metadata_path(self):
+        return join(self.build_dir, self.metadata_file)
+
+    def build(self):
+        # Needed: a metadata file
+        lines = [
+            '<?xml version="1.0"?>',
+            '<dc:title>%(title)s</dc:title>',
+            '<dc:creator>%(authors)s</dc:creator>',
+        ]
+        with codecs.open(self.metadata_path, "w",
+                         encoding="utf", errors="xmlcharrefreplace") as fd:
+            text = '\n'.join(lines) % self.core_data
+            fd.write(text)
+        super(PandocEPUBGenerator, self).build()
+
+    @property
+    def options(self):
+        data = [
+            u'--epub-metadata=%s' % self.metadata_path,
+        ]
+        return data
+
+# FIXME
+PandocPDFGenerator = CalibrePDFGenerator
