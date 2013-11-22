@@ -149,7 +149,11 @@ class EbookGenerator(Generator):
         options = u' '.join(self.options)
         ebook_convert = self.command + u' ' + options
         ebook_convert = ebook_convert % self.core_data
-        output = shell(ebook_convert.encode('utf'))
+        command = ebook_convert.encode('utf')
+        if self.args.get('--verbose', False):
+            print success("Run:\n    %s" % command)
+            print
+        output = shell(command)
         if self.args.get('--verbose', False):
             for line in output.output():
                 print warning(line)
