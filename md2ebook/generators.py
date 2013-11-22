@@ -238,10 +238,12 @@ class PandocEPUBGenerator(EPUBGenerator):
 
     @property
     def options(self):
-        data = [
+        options = [
             u'--epub-metadata=%s' % self.metadata_path,
         ]
-        return data
+        if self.cover:
+            options.append(u'--epub-cover-image=%(cover)s')
+        return options
 
 # FIXME
 PandocPDFGenerator = CalibrePDFGenerator
