@@ -252,5 +252,13 @@ class PandocEPUBGenerator(EPUBGenerator):
             options.append(u'--epub-cover-image=%s' % self.cover)
         return options
 
-# FIXME
-PandocPDFGenerator = CalibrePDFGenerator
+
+class PandocPDFGenerator(PDFGenerator):
+    command = u'pandoc %(options)s %(html_file)s -o %(pdf_file)s'
+
+    @property
+    def options(self):
+        options = [
+            u'-f html',
+        ]
+        return options
