@@ -6,8 +6,13 @@ Requirements
 ============
 
 * `Calibre <http://calibre-ebook.com/>`_  (especially its `command-line-interface tools <http://manual.calibre-ebook.com/cli/cli-index.html>`_)
+* `Pandoc <http://johnmacfarlane.net/pandoc/>`_
 * `Python <http://python.org/>`_
 * `epubcheck <https://github.com/IDPF/epubcheck>`_ (this one's optional)
+
+Please note that you need either **Calibre** or **Pandoc** (or both) to generate
+EPUB files, but you need Calibre (and its CLI tools) to check the EPUB
+conformity.
 
 Installation
 ------------
@@ -81,7 +86,8 @@ Here are its **mandatory** options, as a complete example:
         "files": ["chapter1.md", "chapter2.md", "chapter3.md"],
         "author": "Joe A. Nonymous",
         "title": "What a beautiful title",
-        "fileroot": "what-a-beautiful-title"
+        "fileroot": "what-a-beautiful-title",
+        "generator": "calibre"
     }
 
 * ``files`` is a list of markdown files that live in your book root directory.
@@ -91,6 +97,8 @@ Here are its **mandatory** options, as a complete example:
 * ``fileroot`` this string will serve as a *root* for the different outputs.
   Following the example, you'll produce ``what-a-beautiful-title.html`` and
   ``what-a-beautiful-title.epub`` in your book root directory.
+* ``generator`` is either "calibre" or "pandoc". Pick the one you prefer (or
+  the one that is available on your system).
 
 Extra configuration
 -------------------
@@ -138,7 +146,8 @@ Here's an example of config.json using the extensions::
     "title": "Les 3 Mousquetaires",
     "fileroot": "les-3-mousquetaires",
     "author": "Alexandre Dumas",
-    "extensions": ["admonitions", "toc", "footnotes"]
+    "extensions": ["admonitions", "toc", "footnotes"],
+    "generator": "pandoc"
     }
 
 Extension parameters are set `as described in the docs <http://pythonhosted.org/Markdown/extensions/header_id.html>`_
