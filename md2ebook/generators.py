@@ -146,9 +146,10 @@ class EbookGenerator(Generator):
     "Generic Ebook generator"
 
     def build(self):
-        options = u' '.join(self.options)
-        ebook_convert = self.command + u' ' + options
-        ebook_convert = ebook_convert % self.core_data
+        data = self.core_data.copy()
+        options = u' '.join(self.options) % data
+        data.update({"options": options})
+        ebook_convert = self.command % data
         command = ebook_convert.encode('utf')
         if self.args.get('--verbose', False):
             print success("Run:\n    %s" % command)
@@ -179,7 +180,7 @@ class PDFGenerator(EbookGenerator):
 class CalibreEPUBGenerator(EPUBGenerator):
     "Calibre EPUB Generator"
 
-    command = u'ebook-convert %(html_file)s %(epub_file)s'
+    command = u'ebook-convert %(html_file)s %(epub_file)s %(options)s'
 
     @property
     def options(self):
@@ -199,7 +200,7 @@ class CalibreEPUBGenerator(EPUBGenerator):
 
 class CalibrePDFGenerator(PDFGenerator):
     "Calibre PDF Generator"
-    command = u'ebook-convert %(html_file)s %(pdf_file)s'
+    command = u'ebook-convert %(html_file)s %(pdf_file)s %(options)s'
 
     @property
     def options(self):
@@ -217,7 +218,7 @@ class CalibrePDFGenerator(PDFGenerator):
 
 class PandocEPUBGenerator(EPUBGenerator):
     "Pandoc EPUB Generator"
-    command = u'pandoc %(html_file)s -o %(epub_file)s'
+    command = u'pandoc %(options)s %(html_file)s -o %(epub_file)s'
 
     @property
     def metadata_file(self):
@@ -243,10 +244,12 @@ class PandocEPUBGenerator(EPUBGenerator):
     @property
     def options(self):
         options = [
+            u'-f html',
+            u'-t epub',
             u'--epub-metadata=%s' % self.metadata_path,
         ]
         if self.cover:
-            options.append(u'--epub-cover-image=%(cover)s')
+            options.append(u'--epub-cover-image=%s' % self.cover)
         return options
 
 # FIXME
