@@ -5,6 +5,7 @@
 Usage:
   md2ebook start [<name>] [--overwrite] [--bookname=<bookname>]
   md2ebook build [--with-pdf] [--verbose] [--cover=<cover>]
+                 [--generator=<generator>]
   md2ebook check
   md2ebook --version
 
@@ -23,6 +24,8 @@ Options:
   --with-pdf               Will generate the PDF along with the HTML and EPUB.
   --cover=<cover>          File path or URL for a cover that would override the
                            configuration (or default standard).
+  --generator=<generator>  Set the generator to be used at build time. So far,
+                           two generators are available: calibre and pandoc.
 
 """
 
@@ -34,9 +37,9 @@ from .checkers import check_dependencies
 
 def main():
     "Main program"
-    check_dependencies()
+    generators = check_dependencies()
     args = docopt(__doc__, version='md2ebook 0.0.1-dev')
-    commander = Commander(args)
+    commander = Commander(args, generators)
     commander.handle()
 
 if __name__ == '__main__':

@@ -32,8 +32,9 @@ def check_current_directory(func):
 
 class Commander(object):
 
-    def __init__(self, args):
+    def __init__(self, args, generators):
         self.args = args
+        self.generators = generators
         self.cwd = CWD
 
     def load_config(self):
@@ -82,6 +83,22 @@ class Commander(object):
                 }
                 data['fileroot'] = unidecode(data['title']).lower() \
                     .replace(' ', '-')
+                # pick a generator
+                if len(self.generators) == 1:
+                    data['generator'] = self.generators[0]
+                else:
+                    picked_generator = None
+                    while not picked_generator:
+                        picked_generator = ask(
+                            "Which generator? [%s] "
+                            % ', '.join(self.generators)
+                        )
+                        if picked_generator not in self.generators:
+                            print warning(
+                                'Wrong answer. Please pick one on the list')
+                            picked_generator = None
+                    # fine, we have one.
+                    data['generator'] = picked_generator
                 json.dump(data, fd, indent=4, encoding="utf")
 
         # Game over
