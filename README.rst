@@ -20,7 +20,7 @@ Installation
 Once the non-python requirements are installed, you can install system-wide, or
 inside a virtualenv::
 
-    pip install -e ./
+    pip install md2ebook
 
 
 Usage
