@@ -254,7 +254,32 @@ class PandocEPUBGenerator(EPUBGenerator):
 
 
 class PandocPDFGenerator(PDFGenerator):
-    command = u'pandoc %(options)s %(html_file)s -o %(pdf_file)s'
+    command = u'pandoc %(options)s %(cover_file)s %(html_file)s -o %(pdf_file)s'
+
+    @property
+    def cover_file(self):
+        return 'cover.html'
+
+    @property
+    def cover_path(self):
+        return join(self.build_dir, self.cover_file)
+
+    def build(self):
+        # optional cover
+        if self.cover:
+            with codecs.open(self.cover_path, 'w', encoding='utf') as fd:
+                fd.write(
+                    '<html><head></head><body><img src="%s" /></body></html>'
+                    % self.cover)
+        super(PandocPDFGenerator, self).build()
+
+    @property
+    def core_data(self):
+        data = super(PandocPDFGenerator, self).core_data
+        data['cover_file'] = ''
+        if self.cover:
+            data['cover_file'] = self.cover_path
+        return data
 
     @property
     def options(self):
