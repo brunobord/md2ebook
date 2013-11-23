@@ -1,24 +1,24 @@
-from setuptools import setup
-from os.path import join, dirname, abspath
+from setuptools import setup, find_packages
+from os.path import join, dirname
 
 
-def read_relative_file(filename):
-    """Returns contents of the given file, whose path is supposed relative
-    to this module."""
-    with open(join(dirname(abspath(__file__)), filename)) as f:
-        return f.read()
+def read(fname):
+    return open(join(dirname(__file__), fname)).read()
+
 
 setup(
     name='md2ebook',
     version='0.1.1',
     description='Build e-books (EPUB or PDF) out of markdown files',
-    long_description=read_relative_file('README.rst'),
+    long_description=read('README.rst'),
     url='https://github.com/brunobord/md2ebook/',
     license='MIT',
     author='Bruno Bord',
     author_email='bruno@jehaisleprintemps.net',
     py_modules=['md2ebook'],
+    packages=find_packages(),
     include_package_data=True,
+    zip_safe=False,
     install_requires=(
         'docopt',
         'markdown',
